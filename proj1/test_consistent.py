@@ -6,7 +6,7 @@ subarray in it.
 """
 
 import alg1
-#import alg2
+import alg2
 import alg3
 import random
 import sys
@@ -35,7 +35,7 @@ def main():
 		sz = int(raw_input("array size? "))
 		mx = int(raw_input("max absolute value of an array element? "))
 	print "Testing with arrays size " + str(sz) + " max val " + str(mx) + " for " + str(ntests) + " tests."
-	algs = (alg1.alg1, alg3.max_sub)
+	algs = (alg1.alg1, alg2.alg2, alg3.max_sub)
 	for i in range(0, ntests):
 		arr = randarray(sz, mx)
 		results = []
