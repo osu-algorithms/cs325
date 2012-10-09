@@ -36,5 +36,9 @@ def max_sub(a):
         middle = max_suffix(b) + max_prefix(c)
         return max([first, last, middle])
 
-args = map(int,argv[1:])
-print max_sub(args)
+def main():
+	args = map(int,argv[1:])
+	print max_sub(args)
+
+if __name__ == "__main__":
+	main()
