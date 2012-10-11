@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 def alg2(a):
-    mx = 0
+    mx = a[0]
     for i in range(len(a)):
         s = 0 # sum
         for j in range(i, len(a)):
