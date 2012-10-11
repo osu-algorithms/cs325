@@ -3,8 +3,8 @@
 def alg1(a):
     mx = a[0]
     for i in range(len(a)):
-        for j in range(i+1, len(a)+1):
-            s = sum(a[i:j])
+        for j in range(i, len(a)):
+            s = sum(a[i:j+1])
             if (s > mx):
                 mx = s
     return mx
