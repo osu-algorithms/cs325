@@ -13,13 +13,7 @@ def max_prefix(a):
 
 def max_suffix(a):
     a.reverse()
-    max = a[0]
-    sum = 0
-    for i in a:
-        sum += i
-        if sum > max:
-            max = sum
-    return max
+    return max_prefix(a)
 
 def max_sub(a):
     l = len(a)
