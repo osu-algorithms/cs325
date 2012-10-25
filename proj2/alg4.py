@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 
-def dynamic_programming(a):
+def alg4(a):
     max_subarray = 0
     max_suffix = 0
     for i in a:
