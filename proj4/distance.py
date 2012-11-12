@@ -15,3 +15,12 @@ def distance(a):
             d[j].append(int(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)) + 0.5))
             #d[i][j] = d[j][i]
     return d
+
+def mirror(a):
+    b = a[:]
+    b.reverse()
+    for i in range(len(a)):
+        b[i] = b[i][:]
+        b[i].reverse()
+        a[i] = a[i] + [0] + b[i]
+    return a

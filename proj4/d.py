@@ -1,14 +1,14 @@
-from distance import distance
+from distance import distance, mirror
 from time import time
 
-n = 90
+n = 125
 m = []
 for i in range(n):
     for j in range(n):
         m.append((i,j))
 t = time()
-distance(m)
-#for i in distance(m):
+mirror(distance(m))
+#for i in mirror(distance(m)):
 #    print i
 print (time() - t)
 
