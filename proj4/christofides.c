@@ -24,10 +24,6 @@ int* distance(vector* v, int l){
             d = (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
             s = sqrt(d);
             d = (int) (s + 0.5);
-//            k = 0
-//            for ( k = 1; d >  ) {
-//                max = e[i][j];
-//            }
             e[i*l+j] = d;
             e[j*l+i] = d;
         }
@@ -41,23 +37,39 @@ vector* mst(int* e, int l){
     vector s;
     int q;
     
-    int i, j, k;
+    int a = 0, f, i, j, k = 0;
     v[0] = 1;
     for (i = 1; i < l; i++) {
         v[i] = 0;
     }
     
-    k = 1
-    while (k) {
-        s = 0;
+    f = 1;
+    while (f) {
+        f = 0;
+        q = 0;
         for (i = 0; i < l; i++) {
             if (!v[i]) {
                 continue;
             }
             for (j = 0; j < l; j++) {
+                //printf("%d %d\n", i, j);
                 if (v[j]) {
                     continue;
-                } else if (e[i*l+j] <)
+                } else if (!q || (e[i*l+j] < q)) {
+                    f = 1;
+                    q = e[i*l+j];
+                    s.x = i;
+                    s.y = j;
+                }
+            }
+        }
+        if (f && k > l-1) {
+            printf("%d+%d edges were found in MST\n", l, a++);
+        }
+        if (f) {
+            v[s.y] = 1;
+            g[k++] = s; 
+        }
     }
     free(v);
     return g;
