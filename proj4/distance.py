@@ -14,7 +14,7 @@ def distance(a):
             y2 = a[j][1]
             d[j].append(int(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)) + 0.5))
             #d[i][j] = d[j][i]
-    return d
+    return mirror(d)
 
 def mirror(a):
     b = a[:]

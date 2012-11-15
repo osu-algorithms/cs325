@@ -3,7 +3,9 @@ def mst(a):
     g = set([0])
     e = set([])
     while v:
-        l = (a[0][v[0]],0,v[0])
+        w = v.pop()
+        v.add(w)
+        l = (a[0][w],0,w)
         for n in g:
             for i in v:
                 if a[n][i] < l[0]:
