@@ -33,14 +33,16 @@ int* distance(vector* v, int l){
 
 vector* mst(int* e, int l){
     char* v = (char*)malloc(l*sizeof(char));
+    int* m = (int*)malloc(l*sizeof(int));
     vector* g = (vector*)malloc((l-1)*sizeof(vector));
     vector s;
     int q;
     
-    int a = 0, f, i, j, k = 0;
+    int f, i, j, k = 0;
     v[0] = 1;
     for (i = 1; i < l; i++) {
         v[i] = 0;
+        m[i] = 0;
     }
     
     f = 1;
@@ -48,27 +50,28 @@ vector* mst(int* e, int l){
         f = 0;
         q = 0;
         for (i = 0; i < l; i++) {
-            if (!v[i]) {
+            if (v[i]) {
                 continue;
             }
-            for (j = 0; j < l; j++) {
-                //printf("%d %d\n", i, j);
-                if (v[j]) {
-                    continue;
-                } else if (!q || (e[i*l+j] < q)) {
-                    f = 1;
-                    q = e[i*l+j];
-                    s.x = i;
-                    s.y = j;
-                }
+            if (!q || (e[m[i]*l+i] < q)) {
+                f = 1;
+                q = e[m[i]*l+i];
+                s.x = m[i];
+                s.y = i;
             }
-        }
-        if (f && k > l-1) {
-            printf("%d+%d edges were found in MST\n", l, a++);
         }
         if (f) {
             v[s.y] = 1;
             g[k++] = s; 
+
+            for (i = 0; i < l; i++) {
+                if (!v[i]) {
+                    continue;
+                }
+                if (e[s.y*l+i] < e[m[i]*l+i]) {
+                    m[i] = s.y;
+                }
+            }
         }
     }
     free(v);
