@@ -111,7 +111,7 @@ int* mst_tsp(int* edges, int length){
     
     while (v2 > -1) {
         flag = 0;
-        for (i = 1; i < length - 1; i++) {
+        for (i = 0; i < length; i++) {
             if ( vertices[i] ) { continue; }
             if (MST[i] == v2) {
                 flag = 1;
@@ -128,9 +128,8 @@ int* mst_tsp(int* edges, int length){
         }
     }
     solution[++j] = 0;
-    solution[0] += edges[v1*length+i];
+    solution[0] += edges[v1*length];
 
-    printf("%d\n", j);
     free(MST);
     return solution;
 }
@@ -148,7 +147,7 @@ int* christofides(int* edges, int length){
 }
 
 int main(){
-    int n = 4;
+    int n = 125;
     int length = n*n;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
     int* solution_mst;
@@ -165,17 +164,15 @@ int main(){
     }
 
     edges = distance(vertices,length);
-    printf("edges calculated\n");
     solution_mst = mst_tsp(edges,length);
-    printf("length of MST algorithm path: %d\n", solution_mst[0]);
-    for (i = 1; i < length + 2; i++) {
-        printf("City %d: %d ; trip :%d\n", i, solution_mst[i], edges[solution_mst[i]*length+solution_mst[i-1]]);
+    for (i = 0; i < length + 2; i++) {
+        printf("%d\n", solution_mst[i]);
     }
     //solution_christofides = christofides(edges,length);
     //printf("length of Christofides algorithm path: %d\n", solution_christofides[0]);
 
     free(vertices);
     free(edges);
-    free(solution_mst);
+    //free(solution_mst);
     //free(solution_christofides);
 }
