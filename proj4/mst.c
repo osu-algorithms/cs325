@@ -71,7 +71,7 @@ int* mst(int* edges, int length){
             MST[shortest.y] = shortest.x;
 
             for (i = 0; i < length; i++) {
-                if (!vertices[i]) {
+                if (vertices[i]) {
                     continue;
                 }
                 if (edges[shortest.y*length+i] < edges[minimum[i]*length+i]) {
