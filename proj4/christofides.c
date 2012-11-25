@@ -9,11 +9,11 @@ typedef struct {
 
 typedef struct vector_dll_t vector_dll;
 
-typedef struct {
+struct vector_dll_t {
     vector v;
     vector_dll* p;
     vector_dll* n;
-} vector_dll_t;
+};
 
 typedef struct {
     vector_dll* first;
@@ -40,7 +40,7 @@ int* distance(vector* vertices, int length){
     return edges;
 }
 
-int* mst(int* edges, int length){
+vector_dll* mst(int* edges, int length){
     // for vertex i, vertices[i] is whether that vertex is
     // in the current MST
     char* vertices = (char*)malloc(length*sizeof(char));
@@ -48,11 +48,11 @@ int* mst(int* edges, int length){
     // current MST that is closest to i
     int* minimum = (int*)malloc(length*sizeof(int));
     // graph is the list of edges in the MST
-    vector* graph = (vector*)malloc((length-1)*sizeof(vector));
-    vector_dll* dll = 0;
-    // alternate form for storing MST
-    int* MST = (int*)malloc((length)*sizeof(int));
-    MST[0] = -1;
+    vector_dll* head = (vector_dll*)malloc(sizeof(vector_dll));
+    head->p = 0;
+    head->n = 0;
+    vector_dll* n;
+    vector_dll* m = head;
     // shortest is the shortest edge connecting a vertex in the MST to
     // a vertex not in the MST
     vector shortest;
@@ -84,14 +84,15 @@ int* mst(int* edges, int length){
         }
         if (flag) {
             vertices[shortest.y] = 1;
-            MST[shortest.y] = shortest.x;
-            graph[k++] = shortest; 
-            // create new
-            // point at old
-            // update old
+            n = (vector_dll*)malloc(sizeof(vector_dll));
+            m->n = n;
+            n->p = m;
+            n->n = 0;
+            n->v = shortest;
+            m = n;
 
             for (i = 0; i < length; i++) {
-                if (!vertices[i]) {
+                if (vertices[i]) {
                     continue;
                 }
                 if (edges[shortest.y*length+i] < edges[minimum[i]*length+i]) {
@@ -102,73 +103,62 @@ int* mst(int* edges, int length){
     }
     free(vertices);
     free(minimum);
-    free(graph);
-    return MST;
-}
-
-int* mst_tsp(int* edges, int length){
-    char* vertices = (char*)malloc(length*sizeof(char));
-    int* MST = mst(edges,length);
-    int* solution = (int*)malloc((length+2)*sizeof(int));
-    int v1 = 0, v2 = 0;
-    int flag, i, j = 1;
-    
-    // intialize array
-    vertices[0] = 1;
-    for (i = 1; i < length; i++) {
-        vertices[i] = 0;
-    }
-
-    solution[0] = 0; //current length
-    solution[1] = 0; //first city
-    
-    while (v2 > -1) {
-        flag = 0;
-        for (i = length - 1; i >= 0; i--) {
-            if ( vertices[i] ) { continue; }
-            if (MST[i] == v2) {
-                flag = 1;
-                solution[++j] = i;
-                solution[0] += edges[v1*length+i];
-                v1 = i;
-                v2 = i;
-                vertices[i] = 1;
-                break;
-            }
-        }
-        if (!flag) {
-            v2 = MST[v2];
-        }
-    }
-    solution[++j] = 0;
-    solution[0] += edges[v1*length];
-
-    free(MST);
-    return solution;
+    return head;
 }
 
 //returns the minimum perfect matching for odd degree vertices in MST
-vector* perfect_matching(int* MST, int length){
+vector_dll* perfect_matching(vector_dll* MST, int length){
+    int* degree = (int*)malloc(length*sizeof(int));
+    int i, j = 0;
+    vector_dll* head = (vector_dll*)malloc(sizeof(vector_dll));
+    head->p = 0;
+    head->n = 0;
+    vector_dll* n;
+
+    for (i = 0; i < length; i++) {
+        degree[i] = 0;
+    }
+    n = MST->n;
+    while (n != 0) {
+        degree[n->v.x]++;
+        degree[n->v.y]++;
+        n = n->n;
+    }
+    for (i = 0; i < length; i++) {
+        if ((degree[i] % 2) != 0) {
+            j++;
+        }
+    }
+    return head;
 }
 
 int* christofides(int* edges, int length){
-    int* MST = mst(edges,length);
-    vector* PM = perfect_matching(MST, length-1);
+    vector_dll* n;
+    vector_dll* MST = mst(edges,length);
+    vector_dll* PM = perfect_matching(MST, length);
     int* solution = (int*)malloc((length+2)*sizeof(int));
+    int i;
     
     solution[0] = 0;
     
-    free(MST);
-    free(PM);
+    while (MST != 0) {
+        n = MST;
+        MST = MST->n;
+        free(n);
+    }
+    while (PM != 0) {
+        n = PM;
+        PM = PM->n;
+        free(n);
+    }
     return solution;
 }
 
 int main(){
-    int n = 125;
+    int n = 3;
     int length = n*n;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
-    int* solution_mst;
-    int* solution_christofides;
+    int* solution;
     int* edges;
     int i, j, k = 0;
     
@@ -181,15 +171,10 @@ int main(){
     }
 
     edges = distance(vertices,length);
-    solution_mst = mst_tsp(edges,length);
-    for (i = 0; i < length + 2; i++) {
-        printf("%d\n", solution_mst[i]);
-    }
-    //solution_christofides = christofides(edges,length);
-    //printf("length of Christofides algorithm path: %d\n", solution_christofides[0]);
+    solution = christofides(edges,length);
+    printf("length of Christofides algorithm path: %d\n", solution[0]);
 
     free(vertices);
     free(edges);
-    //free(solution_mst);
-    //free(solution_christofides);
+    free(solution);
 }
