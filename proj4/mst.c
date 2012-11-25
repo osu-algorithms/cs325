@@ -7,11 +7,11 @@ typedef struct {
     int y;
 } vector;
 
-int* distance(vector* vertices, int length){
+int* distance_squared(vector* vertices, int length){
     int* edges = (int*)malloc(length*length*sizeof(int));
     int x1, y1, x2, y2;
     int distance;
-    int i, j, k;
+    int i, j;
 
     for (i = 0; i < length; i++) {
         x1 = vertices[i].x;
@@ -19,12 +19,27 @@ int* distance(vector* vertices, int length){
         for (j = i + 1; j < length; j++) {
             x2 = vertices[j].x;
             y2 = vertices[j].y;
-            distance = (int)(sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2)) + 0.5);
+            distance = (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
             edges[i*length+j] = distance;
             edges[j*length+i] = distance;
         }
     }
     return edges;
+}
+
+void distance_approx(int* edges, int length){
+    //int* edges = (int*)malloc(length*length*sizeof(int));
+    int distance;
+    int i, j;
+
+    for (i = 0; i < length; i++) {
+        for (j = i + 1; j < length; j++) {
+            distance = (int)(sqrt(edges[i*length+j]) + 0.5);
+            edges[i*length+j] = distance;
+            edges[j*length+i] = distance;
+        }
+    }
+    //return edges;
 }
 
 int* mst(int* edges, int length){
@@ -88,6 +103,7 @@ int* mst(int* edges, int length){
 int* mst_tsp(int* edges, int length){
     char* vertices = (char*)malloc(length*sizeof(char));
     int* MST = mst(edges,length);
+    distance_approx(edges,length);
     int* solution = (int*)malloc((length+2)*sizeof(int));
     int v1 = 0, v2 = 0;
     int flag, i, j = 1;
@@ -127,7 +143,7 @@ int* mst_tsp(int* edges, int length){
 }
 
 int main(){
-    int n = 200;
+    int n = 15;
     int length = n*n;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
     int* solution;
@@ -142,7 +158,7 @@ int main(){
         }
     }
 
-    edges = distance(vertices,length);
+    edges = distance_squared(vertices,length);
     solution = mst_tsp(edges,length);
     for (i = 0; i < length + 2; i++) {
         printf("%d\n", solution[i]);
