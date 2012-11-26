@@ -256,6 +256,63 @@ vector_dll* mst(int* edges_squared, int length){
     return head;
 }
 
+// this would find the true MPM, but the recursion is too great, and it will segfault on almost anything.
+void mpm(int* edges, int_dll* odd, int length) {
+    if (!odd->n) {
+        odd->i = 0;
+    } else {
+        int start;
+        int x;
+        int xl;
+        int y;
+        int length;
+        int mpm_y;
+        int mpm_length;
+
+        /*
+        lock a
+        lock b
+        iterate
+        */
+        x = odd->n->i;
+        int_dll_remove(odd,odd->n);
+        xl = x*length;
+        start = odd->n->i;
+
+        y = odd->n->i;
+        int_dll_remove(odd,odd->n);
+        mpm(edges, odd, length);
+        mpm_length = edges[xl+y] + odd->i;
+        mpm_y = y;
+        int_dll_add(odd, odd->p, y);
+        while (odd->n->i != start) {
+            y = odd->n->i;
+            int_dll_remove(odd,odd->n);
+            mpm(edges, odd, length);
+            length = edges[xl+y] + odd->i;
+            if (length < mpm_length) {
+                mpm_length = length;
+                mpm_y = y;
+            }
+            int_dll_add(odd, odd->p, y);
+        }
+        while(odd->n->i != mpm_y) {
+            y = odd->n->i;
+            int_dll_remove(odd,odd->n);
+            int_dll_add(odd,odd->p,y);
+        }
+        int_dll_remove(odd,odd->n);
+        mpm(edges, odd, length);
+        int_dll_add(odd,odd,y);
+        int_dll_add(odd,odd,x);
+        odd->i = mpm_length;
+    }
+}
+
+void greedy_pm(int* edges, int_dll* odd, int length) {
+    //i haven't had time to actually do this yet.
+}
+
 //returns the minimum perfect matching for odd degree vertices in MST
 vector_dll* minimum_perfect_matching(int* edges_squared, vector_dll* MST, int length){
     int* degree = (int*)malloc(length*sizeof(int));
@@ -285,7 +342,9 @@ vector_dll* minimum_perfect_matching(int* edges_squared, vector_dll* MST, int le
     }
 
 
-    // find PM
+    // find MPM
+    //mpm(edges_squared, odd_vertices, length);
+    greedy_pm(edges_squared, odd_vertices, length);
     // for now we only find *a* perfect matching
     while (odd_vertices->n) {
         v.x = odd_vertices->n->i;
@@ -306,9 +365,10 @@ int* christofides(vector* cities, int length){
     vector_dll* n;
     vector_dll* head = mst(edges,length);
     
-    // one of these lines should induce an MST solution, the other a christofides solution.
-    vector_dll* reverse = minimum_perfect_matching(edges,head,length);
-    //vector_dll* reverse = vector_dll_copy(head);
+    // uncomment the first line to create a perfect matching based algorithm.
+    // uncomment the second line for an MST based algorithm.
+    //vector_dll* reverse = minimum_perfect_matching(edges,head,length);
+    vector_dll* reverse = vector_dll_copy(head);
     
     vector_dll_insert_list(head,head->p,reverse);
 
