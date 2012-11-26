@@ -5,6 +5,7 @@
 typedef struct {
     int x;
     int y;
+    int n; //city number
 } vector;
 
 typedef struct vector_dll_t vector_dll;
@@ -181,23 +182,38 @@ int* christofides(int* edges, int length){
     return solution;
 }
 
-int main(){
-    int n = 100;
-    int length = n*n;
-    vector* vertices = (vector*)malloc(length*sizeof(vector));
+int main(int argc, char *argv[]){
+    int length;
+    vector* vertices;
     int* solution;
     int* edges;
-    int i, j, k = 0;
-    
-    // create a TSP input that is every point in a nxn matrix
-    for (i = 0; i < n; i++){
-        for (j = 0; j < n; j++){
-            vertices[k].x = i;
-            vertices[k++].y = j;
-        }
+    int i, j, k, n = 0;
+    int this_x;
+    int this_y;
+    int this_n;
+    FILE *fp;
+    if(argc < 3){
+        printf("Missing arguments: name of test file, number of lines\n");
+        return 0;
     }
-
+    n = atoi(argv[2]);
+    length = n*n;
+    vertices = (vector*)malloc(length*sizeof(vector));
+    fp = fopen(argv[1], "r");
+    if (fp == NULL){
+        printf("input file %s not found! Aborting.\n", argv[1]);
+        return 0;
+    }
+    printf("successfully opened file\n");
+    while (fscanf(fp, "%i %i %i", &this_n, &this_x, &this_y) == 3){
+        //printf("adding vertex # %d coords %d %d\n", this_n, this_x, this_y);
+        vertices[k].x = this_x;
+        vertices[k].y = this_y;
+        vertices[k++].n = this_n;
+    }
+    //printf("made vertices, now calling distance to make edges\n");
     edges = distance(vertices,length);
+    //printf("made edges, now calling chris to make solution\n");
     solution = christofides(edges,length);
     printf("length of Christofides algorithm path: %d\n", solution[0]);
 
