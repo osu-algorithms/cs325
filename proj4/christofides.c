@@ -46,7 +46,11 @@ int* distance(vector* vertices, int length){
 vector_dll* mst(int* edges, int length){
     // for vertex i, vertices[i] is whether that vertex is
     // in the current MST
-    char* vertices = (char*)malloc(length*sizeof(char));
+    int_dll* vs = (int_dll*)malloc(sizeof(int_dll));
+    vs->p = 0;
+    vs->n = 0;
+    int_dll* ni;
+    int_dll* mi;
     // for vertex i not in the current MST, minimum[i] is the edge in the
     // current MST that is closest to i
     int* minimum = (int*)malloc(length*sizeof(int));
@@ -65,28 +69,36 @@ vector_dll* mst(int* edges, int length){
     int flag, i, j, k = 0;
 
     // intialize arrays
-    vertices[0] = 1;
+
     for (i = 1; i < length; i++) {
-        vertices[i] = 0;
         minimum[i] = 0;
+
+        ni = (int_dll*)malloc(sizeof(int_dll));
+        mi->n = ni;
+        ni->p = mi;
+        ni->n = 0;
+        ni->i = i;
+        mi = ni;
     }
     
     flag = 1;
     while (flag) {
+        ni = vs->n;
         flag = 0;
-        for (i = 0; i < length; i++) {
-            if (vertices[i]) {
-                continue;
-            }
-            if (!flag || (edges[minimum[i]*length+i] < shortest_length)) {
+        while (ni != 0) {
+            if (!flag || (edges[minimum[ni->i]*length+ni->i] < shortest_length)) {
                 flag = 1;
-                shortest_length = edges[minimum[i]*length+i];
-                shortest.x = minimum[i];
-                shortest.y = i;
+                shortest_length = edges[minimum[ni->i]*length+ni->i];
+                shortest.x = minimum[ni->i];
+                shortest.y = ni->i;
+                mi = ni;
             }
-        }
+            ni = ni->n;
+        } 
         if (flag) {
-            vertices[shortest.y] = 1;
+            mi->p->n = mi->n;
+            mi->n->p = mi->p;
+            free(mi);
             n = (vector_dll*)malloc(sizeof(vector_dll));
             m->n = n;
             n->p = m;
@@ -94,17 +106,20 @@ vector_dll* mst(int* edges, int length){
             n->v = shortest;
             m = n;
 
-            for (i = 0; i < length; i++) {
-                if (vertices[i]) {
-                    continue;
+            ni = vs->n;
+            while (ni != 0) {
+                if (edges[shortest.y*length+ni->i] < edges[minimum[ni->i]*length+ni->i]) {
+                    minimum[ni->i] = shortest.y;
                 }
-                if (edges[shortest.y*length+i] < edges[minimum[i]*length+i]) {
-                    minimum[i] = shortest.y;
-                }
-            }
+                ni = ni->n;
+            } 
         }
     }
-    free(vertices);
+    while (vs != 0) {
+        ni = vs;
+        vs = vs->n;
+        free(ni);
+    }
     free(minimum);
     return head;
 }
