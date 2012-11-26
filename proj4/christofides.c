@@ -129,6 +129,7 @@ vector_dll* perfect_matching(vector_dll* MST, int length){
             j++;
         }
     }
+    printf("Odd edges: %d\n", j);
     return head;
 }
 
@@ -155,7 +156,7 @@ int* christofides(int* edges, int length){
 }
 
 int main(){
-    int n = 3;
+    int n = 100;
     int length = n*n;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
     int* solution;
