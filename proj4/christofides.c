@@ -47,15 +47,18 @@ vector_dll* mst(int* edges, int length){
     // for vertex i, vertices[i] is whether that vertex is
     // in the current MST
     int_dll* vs = (int_dll*)malloc(sizeof(int_dll));
+        if (!vs) { printf("malloc fail"); exit(1); }
     vs->p = 0;
     vs->n = 0;
     int_dll* ni;
-    int_dll* mi;
+    int_dll* mi = vs;
     // for vertex i not in the current MST, minimum[i] is the edge in the
     // current MST that is closest to i
     int* minimum = (int*)malloc(length*sizeof(int));
+        if (!minimum) { printf("malloc fail"); exit(1); }
     // graph is the list of edges in the MST
     vector_dll* head = (vector_dll*)malloc(sizeof(vector_dll));
+        if (!head) { printf("malloc fail"); exit(1); }
     head->p = 0;
     head->n = 0;
     vector_dll* n;
@@ -74,6 +77,7 @@ vector_dll* mst(int* edges, int length){
         minimum[i] = 0;
 
         ni = (int_dll*)malloc(sizeof(int_dll));
+        if (!ni) { printf("malloc fail"); exit(1); }
         mi->n = ni;
         ni->p = mi;
         ni->n = 0;
@@ -85,7 +89,7 @@ vector_dll* mst(int* edges, int length){
     while (flag) {
         ni = vs->n;
         flag = 0;
-        while (ni != 0) {
+        while (ni) {
             if (!flag || (edges[minimum[ni->i]*length+ni->i] < shortest_length)) {
                 flag = 1;
                 shortest_length = edges[minimum[ni->i]*length+ni->i];
@@ -96,8 +100,12 @@ vector_dll* mst(int* edges, int length){
             ni = ni->n;
         } 
         if (flag) {
-            mi->p->n = mi->n;
-            mi->n->p = mi->p;
+            if (mi->p) {
+                mi->p->n = mi->n;
+            }
+            if (mi->n) {
+                mi->n->p = mi->p;
+            }
             free(mi);
             n = (vector_dll*)malloc(sizeof(vector_dll));
             m->n = n;
@@ -107,7 +115,7 @@ vector_dll* mst(int* edges, int length){
             m = n;
 
             ni = vs->n;
-            while (ni != 0) {
+            while (ni) {
                 if (edges[shortest.y*length+ni->i] < edges[minimum[ni->i]*length+ni->i]) {
                     minimum[ni->i] = shortest.y;
                 }
@@ -115,7 +123,7 @@ vector_dll* mst(int* edges, int length){
             } 
         }
     }
-    while (vs != 0) {
+    while (vs) {
         ni = vs;
         vs = vs->n;
         free(ni);
@@ -137,13 +145,13 @@ vector_dll* perfect_matching(vector_dll* MST, int length){
         degree[i] = 0;
     }
     n = MST->n;
-    while (n != 0) {
+    while (n) {
         degree[n->v.x]++;
         degree[n->v.y]++;
         n = n->n;
     }
     for (i = 0; i < length; i++) {
-        if ((degree[i] % 2) != 0) {
+        if (degree[i] % 2) {
             j++;
         }
     }
@@ -160,12 +168,12 @@ int* christofides(int* edges, int length){
     
     solution[0] = 0;
     
-    while (MST != 0) {
+    while (MST) {
         n = MST;
         MST = MST->n;
         free(n);
     }
-    while (PM != 0) {
+    while (PM) {
         n = PM;
         PM = PM->n;
         free(n);
@@ -194,6 +202,6 @@ int main(){
     printf("length of Christofides algorithm path: %d\n", solution[0]);
 
     free(vertices);
-    free(edges);
-    free(solution);
+    //free(edges);
+    //free(solution);
 }
