@@ -15,10 +15,13 @@ struct vector_dll_t {
     vector_dll* n;
 };
 
-typedef struct {
-    vector_dll* first;
-    vector_dll* last;
-} vector_dll_head;
+typedef struct int_dll_t int_dll;
+
+struct int_dll_t {
+    int i;
+    int_dll* p;
+    int_dll* n;
+};
 
 int* distance(vector* vertices, int length){
     int* edges = (int*)malloc(length*length*sizeof(int));
