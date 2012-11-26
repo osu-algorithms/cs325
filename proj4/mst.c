@@ -143,12 +143,11 @@ int* mst_tsp(int* edges, int length){
 }
 
 int main(int argc, char *argv[]){
-    if(argc < 3){
+    if(argc < 2){
         printf("Missing arguments: Name of test file, number of lines\n");
         return 0;
     }
-    int n = atoi(argv[2]);
-    int length = n;
+    int length;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
     int* solution;
     int* edges;
@@ -163,14 +162,11 @@ int main(int argc, char *argv[]){
         vertices[k].x = this_x;
         vertices[k].y = this_y;
     }
-    if(this_n != n){
-        printf("You promised me %d lines and gave me %d! LIAR! Aborting.\n", n, this_n);
-        return 0;
-    }
+    length = this_n + 1;
     edges = distance_squared(vertices,length);
     solution = mst_tsp(edges,length);
     for (i = 0; i < length + 2; i++) {
-        printf("%d ", solution[i]);
+        printf("%d\n", solution[i]);
     }
     printf("\n");
 
