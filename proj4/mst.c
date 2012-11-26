@@ -142,27 +142,37 @@ int* mst_tsp(int* edges, int length){
     return solution;
 }
 
-int main(){
-    int n = 15;
+int main(int argc, char *argv[]){
+    if(argc < 3){
+        printf("Missing arguments: Name of test file, number of lines\n");
+        return 0;
+    }
+    int n = atoi(argv[2]);
     int length = n*n;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
     int* solution;
     int* edges;
     int i, j, k = 0;
-    
-    // create a TSP input that is every point in a nxn matrix
-    for (i = 0; i < n; i++){
-        for (j = 0; j < n; j++){
-            vertices[k].x = i;
-            vertices[k++].y = j;
-        }
+    FILE *fp = fopen(argv[1], "r");
+    int this_n, this_x, this_y;
+    if (fp == NULL){
+        printf("input file %s not found! Aborting.", argv[1]);
+        return 0;
     }
-
+    while(fscanf(fp, "%i %i %i", &this_n, &this_x, &this_y) == 3){
+        vertices[k].x = this_x;
+        vertices[k].y = this_y;
+    }
+    if(this_n != n){
+        printf("You promised me %d lines and gave me %d! LIAR! Aborting.\n", n, this_n);
+        return 0;
+    }
     edges = distance_squared(vertices,length);
     solution = mst_tsp(edges,length);
     for (i = 0; i < length + 2; i++) {
-        printf("%d\n", solution[i]);
+        printf("%d ", solution[i]);
     }
+    printf("\n");
 
     free(vertices);
     free(edges);
