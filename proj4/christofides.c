@@ -7,6 +7,19 @@ typedef struct {
     int y;
 } vector;
 
+typedef struct vector_dll_t vector_dll;
+
+typedef struct {
+    vector v;
+    vector_dll* p;
+    vector_dll* n;
+} vector_dll_t;
+
+typedef struct {
+    vector_dll* first;
+    vector_dll* last;
+} vector_dll_head;
+
 int* distance(vector* vertices, int length){
     int* edges = (int*)malloc(length*length*sizeof(int));
     int x1, y1, x2, y2;
@@ -36,6 +49,7 @@ int* mst(int* edges, int length){
     int* minimum = (int*)malloc(length*sizeof(int));
     // graph is the list of edges in the MST
     vector* graph = (vector*)malloc((length-1)*sizeof(vector));
+    vector_dll* dll = 0;
     // alternate form for storing MST
     int* MST = (int*)malloc((length)*sizeof(int));
     MST[0] = -1;
@@ -72,6 +86,9 @@ int* mst(int* edges, int length){
             vertices[shortest.y] = 1;
             MST[shortest.y] = shortest.x;
             graph[k++] = shortest; 
+            // create new
+            // point at old
+            // update old
 
             for (i = 0; i < length; i++) {
                 if (!vertices[i]) {
@@ -87,10 +104,6 @@ int* mst(int* edges, int length){
     free(minimum);
     free(graph);
     return MST;
-}
-
-//returns the minimum perfect matching for odd degree vertices in MST
-vector* perfect_matching(int* MST, int length){
 }
 
 int* mst_tsp(int* edges, int length){
@@ -111,7 +124,7 @@ int* mst_tsp(int* edges, int length){
     
     while (v2 > -1) {
         flag = 0;
-        for (i = 0; i < length; i++) {
+        for (i = length - 1; i >= 0; i--) {
             if ( vertices[i] ) { continue; }
             if (MST[i] == v2) {
                 flag = 1;
@@ -132,6 +145,10 @@ int* mst_tsp(int* edges, int length){
 
     free(MST);
     return solution;
+}
+
+//returns the minimum perfect matching for odd degree vertices in MST
+vector* perfect_matching(int* MST, int length){
 }
 
 int* christofides(int* edges, int length){
