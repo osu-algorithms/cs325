@@ -39,10 +39,9 @@ void distance_approx(int* edges, int length){
             edges[j*length+i] = distance;
         }
     }
-    //return edges;
 }
 
-int* mst(int* edges, int length){
+int* mst(int* edges_squared, int length){
     // for vertex i, vertices[i] is whether that vertex is
     // in the current MST
     char* vertices = (char*)malloc(length*sizeof(char));
@@ -56,7 +55,7 @@ int* mst(int* edges, int length){
     // a vertex not in the MST
     vector shortest;
     // shortest_length is the length of shortest
-    int shortest_length;
+    int shortest_length, mst_length = 0;
     // flag and iterators
     int flag, i, j, k = 0;
 
@@ -74,9 +73,9 @@ int* mst(int* edges, int length){
             if (vertices[i]) {
                 continue;
             }
-            if (!flag || (edges[minimum[i]*length+i] < shortest_length)) {
+            if (!flag || (edges_squared[minimum[i]*length+i] < shortest_length)) {
                 flag = 1;
-                shortest_length = edges[minimum[i]*length+i];
+                shortest_length = edges_squared[minimum[i]*length+i];
                 shortest.x = minimum[i];
                 shortest.y = i;
             }
@@ -84,12 +83,13 @@ int* mst(int* edges, int length){
         if (flag) {
             vertices[shortest.y] = 1;
             MST[shortest.y] = shortest.x;
+            mst_length += (int)sqrt(edges_squared[shortest.y*length+shortest.x] + 0.5);
 
             for (i = 0; i < length; i++) {
                 if (vertices[i]) {
                     continue;
                 }
-                if (edges[shortest.y*length+i] < edges[minimum[i]*length+i]) {
+                if (edges_squared[shortest.y*length+i] < edges_squared[minimum[i]*length+i]) {
                     minimum[i] = shortest.y;
                 }
             }
@@ -100,7 +100,8 @@ int* mst(int* edges, int length){
     return MST;
 }
 
-int* mst_tsp(int* edges, int length){
+int* mst_tsp(vector* cities, int length){
+    int* edges = distance_squared(cities, length);
     char* vertices = (char*)malloc(length*sizeof(char));
     int* MST = mst(edges,length);
     distance_approx(edges,length);
@@ -147,30 +148,36 @@ int main(int argc, char *argv[]){
         printf("Missing arguments: Name of test file, number of lines\n");
         return 0;
     }
+
     int length;
-    vector* vertices = (vector*)malloc(length*sizeof(vector));
+    vector* vertices;
     int* solution;
-    int* edges;
     int i, j, k = 0;
-    FILE *fp = fopen(argv[1], "r");
+
+    FILE* fp = fopen(argv[1], "r");
     int this_n, this_x, this_y;
+
     if (fp == NULL){
         printf("input file %s not found! Aborting.", argv[1]);
         return 0;
     }
-    while(fscanf(fp, "%i %i %i", &this_n, &this_x, &this_y) == 3){
-        vertices[k].x = this_x;
-        vertices[k].y = this_y;
-    }
+    while(fscanf(fp, "%i %i %i", &this_n, &this_x, &this_y) == 3) {}
+    fclose(fp);
+
     length = this_n + 1;
-    edges = distance_squared(vertices,length);
-    solution = mst_tsp(edges,length);
-    for (i = 0; i < length + 2; i++) {
+    vertices = (vector*)malloc(length*sizeof(vector));
+    fp = fopen(argv[1], "r");
+    while(fscanf(fp, "%i %i %i", &this_n, &this_x, &this_y) == 3) {
+        vertices[k].x = this_x;
+        vertices[k++].y = this_y;
+    }
+
+    solution = mst_tsp(vertices,length);
+
+    for (i = 0; i < length + 1; i++) {
         printf("%d\n", solution[i]);
     }
-    printf("\n");
 
     free(vertices);
-    free(edges);
     free(solution);
 }
