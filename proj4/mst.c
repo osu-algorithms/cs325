@@ -28,7 +28,6 @@ int* distance_squared(vector* vertices, int length){
 }
 
 void distance_approx(int* edges, int length){
-    //int* edges = (int*)malloc(length*length*sizeof(int));
     int distance;
     int i, j;
 
@@ -83,7 +82,7 @@ int* mst(int* edges_squared, int length){
         if (flag) {
             vertices[shortest.y] = 1;
             MST[shortest.y] = shortest.x;
-            mst_length += (int)sqrt(edges_squared[shortest.y*length+shortest.x] + 0.5);
+            mst_length += (int)(sqrt(edges_squared[shortest.y*length+shortest.x]) + 0.5);
 
             for (i = 0; i < length; i++) {
                 if (vertices[i]) {
@@ -174,6 +173,7 @@ int main(int argc, char *argv[]){
 
     solution = mst_tsp(vertices,length);
 
+    //printf("Length: %d\n", solution[0]);
     for (i = 0; i < length + 1; i++) {
         printf("%d\n", solution[i]);
     }
