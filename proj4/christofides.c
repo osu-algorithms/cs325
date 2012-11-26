@@ -307,7 +307,6 @@ int* christofides(vector* cities, int length){
     vector_dll* head = mst(edges,length);
     
     // one of these lines should induce an MST solution, the other a christofides solution.
-    // i don't know why the MPM solution works, when the MST solution doesn't. don't ask.
     vector_dll* reverse = minimum_perfect_matching(edges,head,length);
     //vector_dll* reverse = vector_dll_copy(head);
     
@@ -334,16 +333,49 @@ int* christofides(vector* cities, int length){
 
         //modify to find a loop starting at a point in s;
         if (s->n) {
-            //find a vector in head that starts in s
+            //find a vector in head that connects to s
             n = head->n;
+            while (n) {
+                ni = s->n;
+                while (ni) {
+                    if (ni->i == n->v.x) {
+                        start = n->v.x;
+                        end = n->v.y;
+                        int_dll_add(l, l->p, start);
+                        int_dll_add(l, l->p, end);
+                        vector_dll_remove(head, n);
+                        n = 0;
+                        break;
+                    } else if (ni->i == n->v.y) {
+                        start = n->v.y;
+                        end = n->v.x;
+                        int_dll_add(l, l->p, start);
+                        int_dll_add(l, l->p, end);
+                        vector_dll_remove(head, n);
+                        n = 0;
+                        break;
+                    } else {
+                        ni = ni->n;
+                    }
+                }
+                if (n) {
+                    n = n->n;
+                } else {
+                    break;
+                }
+            }
         } else {
             n = head->n;
+            start = n->v.x;
+            end = n->v.y;
+            int_dll_add(l, l->p, start);
+            int_dll_add(l, l->p, end);
+            vector_dll_remove(head, n);
         }
 
-        start = n->v.x;
-        end = n->v.y;
-        int_dll_add(l, l->p, start);
-        int_dll_add(l, l->p, end);
+        if (start == end) {
+            printf("Error, head was not an eulerian loop");
+        }
 
         while ( start != end ) {
             n = head->n;
