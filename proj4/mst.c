@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
         return 0;
     }
     int n = atoi(argv[2]);
-    int length = n*n;
+    int length = n;
     vector* vertices = (vector*)malloc(length*sizeof(vector));
     int* solution;
     int* edges;

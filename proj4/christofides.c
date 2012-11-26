@@ -197,7 +197,7 @@ int main(int argc, char *argv[]){
         return 0;
     }
     n = atoi(argv[2]);
-    length = n*n;
+    length = n;
     vertices = (vector*)malloc(length*sizeof(vector));
     fp = fopen(argv[1], "r");
     if (fp == NULL){
@@ -217,7 +217,7 @@ int main(int argc, char *argv[]){
     solution = christofides(edges,length);
     printf("length of Christofides algorithm path: %d\n", solution[0]);
 
-    free(vertices);
-    //free(edges);
-    //free(solution);
+    //free(vertices);
+    free(edges);
+    free(solution);
 }
